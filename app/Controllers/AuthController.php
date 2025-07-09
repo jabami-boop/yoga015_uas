@@ -54,10 +54,11 @@ class AuthController extends ResourceController
         $userId = $userModel->insert($userData);
 
         if ($userId) {
+            unset($userData['password']);
             return $this->respond([
                 'status' => 'success',
                 'message' => 'User registered successfully',
-                'data' => $userData // Bug #8: Returning password in response
+                'data' => $userData
             ]);
         }
 
@@ -70,11 +71,20 @@ class AuthController extends ResourceController
         $password = $this->request->getPost('password');
 
         // Bug #9: No input validation
+        $validation = \Config\Services::validation();
+        $rules = [
+            'email'    => 'required|valid_email',
+            'password' => 'required|min_length[6]',
+        ];
+        if (!$this->validate($rules)) {
+            return $this->fail($validation->getErrors());
+        }
+
         $userModel = new UserModel();
         $user = $userModel->where('email', $email)->first();
 
         // Bug #10: Plain text password comparison
-        if ($user && $user['password'] === $password) {
+        if ($user && password_verify($password, $user['password'])) {
             $payload = [
                 'user_id' => $user['id'],
                 'email' => $user['email'],
