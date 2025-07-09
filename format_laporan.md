@@ -15,6 +15,9 @@
 | 5 |adatabase.php| 56-76     |Missing test database config|tambahkan konfigurasi untuk testing|
 | 6 |AuthController.php| 34     |No input validation pada register|Tambahkan validasi input pada method register:|
 | 7 |aAuthController.php| 46    | Password tidak di-hash|tambahkan 'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),|
+| 8 |aAuthController.php| 56    | Mengembalikan password dalam response|tambahkan  unset($userData['password']);|
+| 9 |aAuthController.php| 73    | No input validation pada login|tambahkan  $validation = \Config\Services::validation();|
+| 10 |aAuthController.php| 86    | Plain text password comparison|tambahkan  if ($user && password_verify($password, $user['password']))|
 
 ## Uji dengan Postman:
 - POST /login
